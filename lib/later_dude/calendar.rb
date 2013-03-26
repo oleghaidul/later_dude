@@ -36,24 +36,17 @@ module LaterDude
       @block = block
     end
 
-    def to_html(&block)
-      @block = block if block_given?
-      content_tag(:table, :class => "#{@options[:calendar_class]}") do
-        content_tag(:thead, "#{show_month_names}#{show_day_names}".html_safe) + content_tag(:tbody, show_days)
+    def to_html
+      content_tag(:div, :class => "calendar") do
+        content_tag(:div, "#{show_month_names}".html_safe, :class => 'header') +
+        content_tag(:div, "#{show_day_names}".html_safe, :class => 'day-headers') +
+        content_tag(:div, show_days, :class => 'calendar-body')
       end
-    end
-    
-    def first_rendered_date
-      beginning_of_week(@days.first)
-    end
-    
-    def last_rendered_date
-      beginning_of_week(@days.last + 1.week) - 1
     end
 
     private
     def show_days
-      content_tag(:tr, "#{show_previous_month}#{show_current_month}#{show_following_month}".html_safe)
+      content_tag(:div, "#{show_previous_month}#{show_current_month}#{show_following_month}".html_safe)
     end
 
     def show_previous_month
@@ -80,8 +73,7 @@ module LaterDude
 
     def show_day(day)
       options = { :class => "day" }
-      options[:class] << " otherMonth" if day.month != @days.first.month
-      options[:class] << " weekend" if Calendar.weekend?(day)
+      options[:class] << " blank" if day.month != @days.first.month
       options[:class] << " today" if day.today?
 
       # block is only called for current month or if :yield_surrounding_days is set to true
@@ -96,12 +88,16 @@ module LaterDude
       else
         content = day.day
       end
+      content = '' if day.month != @days.first.month
 
-      content = content_tag(:td, content.to_s.html_safe, options)
+      content = content_tag(:div, options) do
+        content_tag(:span, content.to_s.html_safe) +
+        tag("img", :src => "/assets/blank_image.gif")
+      end
 
       # close table row at the end of a week and start a new one
       # opening and closing tag for the first and last week are included in #show_days
-      content << "</tr><tr>".html_safe if day < @days.last && day.wday == last_day_of_week
+      # content << "</tr><tr>".html_safe if day < @days.last && day.wday == last_day_of_week
       content
     end
 
@@ -114,7 +110,7 @@ module LaterDude
     def show_month_names
       return if @options[:hide_month_name]
 
-      content_tag(:tr, "#{previous_month}#{current_month}#{next_month}".html_safe, :class => 'month_names')
+      content_tag(:span, "#{previous_month}#{current_month}#{next_month}".html_safe)
     end
 
     # @options[:previous_month] can either be a single value or an array containing two values. For a single value, the
@@ -168,18 +164,16 @@ module LaterDude
 
     def show_day_names
       return if @options[:hide_day_names]
-      content_tag(:tr, :class => 'day_names') do
-        apply_first_day_of_week(day_names).inject('') do |output, day|
-          output << content_tag(:th, include_day_abbreviation(day), :scope => 'col', :class => Date::DAYNAMES[day_names.index(day)].downcase)
-        end.html_safe
-      end
+      apply_first_day_of_week(day_names).inject('') do |output, day|
+        output << content_tag(:div, include_day_abbreviation(day), :class => 'day-header')
+      end.html_safe
     end
 
     # => <abbr title="Sunday">Sun</abbr>
     def include_day_abbreviation(day)
       return day if @options[:use_full_day_names]
 
-      content_tag(:abbr, day, :title => full_day_names[abbreviated_day_names.index(day)])
+      content_tag(:span, day)
     end
 
     def apply_first_day_of_week(day_names)
@@ -218,3 +212,4 @@ module LaterDude
     end
   end
 end
+
