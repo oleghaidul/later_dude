@@ -66,8 +66,8 @@ module LaterDude
 
     def show_following_month
       "".tap do |output|
-        diff = 42 - total_days - (@days.last + 1).upto(beginning_of_week(@days.last + 1.week) - 1).count
-        (@days.last + 1).upto(beginning_of_week(@days.last + 1.week) - 1 + diff) { |d| output << show_day(d) }
+        # diff = 42 - total_days - (@days.last + 1).upto(beginning_of_week(@days.last + 1.week) - 1).count
+        (@days.last + 1).upto(beginning_of_week(@days.last + 1.week) - 1) { |d| output << show_day(d) }
       end.html_safe
     end
 
