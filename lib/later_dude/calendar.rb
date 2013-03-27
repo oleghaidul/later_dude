@@ -22,7 +22,7 @@ module LaterDude
     include ActionView::Helpers::TagHelper
     include ActionView::Helpers::UrlHelper
 
-    attr_accessor :output_buffer
+    attr_accessor :output_buffer, :total_days
 
     def initialize(year, month, options={}, &block)
       @year, @month = year, month
@@ -50,24 +50,24 @@ module LaterDude
     end
 
     def show_previous_month
+      @total_days = (beginning_of_week(@days.first)..@days.first - 1).count || 0
       return if @days.first.wday == first_day_of_week # don't display anything if the first day is the first day of a week
-
       "".tap do |output|
         beginning_of_week(@days.first).upto(@days.first - 1) { |d| output << show_day(d) }
       end.html_safe
     end
 
     def show_current_month
+      @total_days += @days.count
       "".tap do |output|
         @days.first.upto(@days.last) { |d| output << show_day(d) }
       end.html_safe
     end
 
     def show_following_month
-      return if @days.last.wday == last_day_of_week # don't display anything if the last day is the last day of a week
-
       "".tap do |output|
-        (@days.last + 1).upto(beginning_of_week(@days.last + 1.week) - 1) { |d| output << show_day(d) }
+        diff = 42 - total_days - (@days.last + 1).upto(beginning_of_week(@days.last + 1.week) - 1).count
+        (@days.last + 1).upto(beginning_of_week(@days.last + 1.week) - 1 + diff) { |d| output << show_day(d) }
       end.html_safe
     end
 
