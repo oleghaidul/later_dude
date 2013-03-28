@@ -72,7 +72,7 @@ module LaterDude
     end
 
     def show_day(day)
-      options = { :class => "day", params: { data: "#{@month}/#{day}/#{@year}"} }
+      options = { :class => "day", params: "#{@month}/#{day}/#{@year}" }
       options[:class] << " blank" if day.month != @days.first.month
       options[:class] << " today" if day.today?
 
