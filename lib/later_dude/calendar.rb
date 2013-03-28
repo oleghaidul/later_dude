@@ -73,8 +73,9 @@ module LaterDude
     end
 
     def show_day(day)
-      hash_params = @calendar.process(day.to_date) unless @calendar.nil?
-      options = { :class => "day", data: { date: "#{day}", hash_params } }
+      hash_params = @calendar.process(day.to_date) || {}
+      hash_params.merge!(date: "#{day}")
+      options = { :class => "day", data: hash_params }
       options[:class] << " blank" if day.month != @days.first.month
       options[:class] << " today" if day.today?
 
