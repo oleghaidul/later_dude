@@ -34,6 +34,7 @@ module LaterDude
 
       @days = Date.civil(@year, @month, 1)..Date.civil(@year, @month, -1)
       @block = block
+      @calendar = @options[:calendar]
     end
 
     def to_html
@@ -72,7 +73,8 @@ module LaterDude
     end
 
     def show_day(day)
-      options = { :class => "day", params: "#{day}" }
+      hash_params = @calendar.process(day.to_date) unless @calendar.nil?
+      options = { :class => "day", data: { date: "#{day}", hash_params } }
       options[:class] << " blank" if day.month != @days.first.month
       options[:class] << " today" if day.today?
 
