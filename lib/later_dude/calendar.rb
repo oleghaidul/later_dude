@@ -34,7 +34,7 @@ module LaterDude
 
       @days = Date.civil(@year, @month, 1)..Date.civil(@year, @month, -1)
       @block = block
-      @calendar = @options[:calendar]
+      @periods = @options[:periods]
     end
 
     def to_html
@@ -73,7 +73,7 @@ module LaterDude
     end
 
     def show_day(day)
-      hash_params = @calendar.process(day.to_date) || {}
+      hash_params = status(@periods, day.to_date) || {}
       hash_params.merge!(date: "#{day}")
       options = { :class => "day" }
       day.month != @days.first.month ? options[:class] << " blank" : options.merge!(data: hash_params)
@@ -102,6 +102,21 @@ module LaterDude
       # opening and closing tag for the first and last week are included in #show_days
       # content << "</tr><tr>".html_safe if day < @days.last && day.wday == last_day_of_week
       content
+    end
+
+    def status(periods, day)
+      if periods.select{|arr| arr.start_date == day.to_date}.any? && periods.select{|arr| arr.end_date == day.to_date}.any?
+        start_period = periods.select{|arr| arr.start_date == day.to_date}
+        end_period = periods.select{|arr| arr.end_date == day.to_date}
+        {status: "bouth", period_id: [start_period.id, end_period.id], color: [start_period.color, end_period.color]}
+      elsif periods.select{|arr| arr.start_date == day.to_date}.any?
+        period = periods.select{|arr| arr.start_date == day.to_date}
+        {status: "start", period_id: period.id, color: period.color}
+      elsif periods.select{|arr| arr.end_date == day.to_date}.any?
+        period = periods.select{|arr| arr.end_date == day.to_date}
+        {status: "end", period_id: period.id, color: period.color}
+      else
+        {status: "not_found"}
     end
 
     def beginning_of_week(day)
