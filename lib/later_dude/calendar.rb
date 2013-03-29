@@ -75,8 +75,8 @@ module LaterDude
     def show_day(day)
       hash_params = @calendar.process(day.to_date) || {}
       hash_params.merge!(date: "#{day}")
-      options = { :class => "day", data: hash_params }
-      options[:class] << " blank" if day.month != @days.first.month
+      options = { :class => "day" }
+      day.month != @days.first.month ? options[:class] << " blank" : options.merge!(data: hash_params)
       options[:class] << " today" if day.today?
 
       # block is only called for current month or if :yield_surrounding_days is set to true
