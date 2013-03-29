@@ -106,14 +106,14 @@ module LaterDude
 
     def status(periods, day)
       if periods.select{|arr| arr.start_date == day.to_date}.any? && periods.select{|arr| arr.end_date == day.to_date}.any?
-        start_period = periods.select{|arr| arr.start_date == day.to_date}
-        end_period = periods.select{|arr| arr.end_date == day.to_date}
+        start_period = periods.select{|arr| arr.start_date == day.to_date}.first
+        end_period = periods.select{|arr| arr.end_date == day.to_date}.first
         {status: "bouth", period_id: [start_period.id, end_period.id], color: [start_period.color, end_period.color]}
       elsif periods.select{|arr| arr.start_date == day.to_date}.any?
-        period = periods.select{|arr| arr.start_date == day.to_date}
+        period = periods.select{|arr| arr.start_date == day.to_date}.first
         {status: "start", period_id: period.id, color: period.color}
       elsif periods.select{|arr| arr.end_date == day.to_date}.any?
-        period = periods.select{|arr| arr.end_date == day.to_date}
+        period = periods.select{|arr| arr.end_date == day.to_date}.first
         {status: "end", period_id: period.id, color: period.color}
       else
         {status: "not_found"}
