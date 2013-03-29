@@ -115,6 +115,9 @@ module LaterDude
       elsif periods.select{|arr| arr.end_date == day.to_date}.any?
         period = periods.select{|arr| arr.end_date == day.to_date}.first
         {status: "end", period_id: period.id, color: period.color}
+      elsif periods.select{|arr| arr.start_date <= day.to_date && arr.end_date >= day.to_date}.any?
+        period = periods.select{|arr| arr.start_date <= day.to_date && arr.end_date >= day.to_date}.first
+        {status: "between", period_id: period.id, color: period.color}
       else
         {status: "not_found"}
       end
