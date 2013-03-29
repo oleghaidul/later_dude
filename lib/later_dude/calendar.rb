@@ -117,6 +117,7 @@ module LaterDude
         {status: "end", period_id: period.id, color: period.color}
       else
         {status: "not_found"}
+      end
     end
 
     def beginning_of_week(day)
