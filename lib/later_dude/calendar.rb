@@ -93,9 +93,15 @@ module LaterDude
       end
       content = '' if day.month != @days.first.month
 
-      content = content_tag(:div, options) do
-        content_tag(:span, content.to_s.html_safe) +
-        tag("img", :src => "/assets/blank_image.gif")
+      if content == ''
+        content = content_tag(:div, options) do
+          content_tag(:span, content.to_s.html_safe) +
+          tag("img", :src => "/assets/blank_image.gif")
+        end
+      else
+        content = content_tag(:div, options) do
+          content_tag(:span, content.to_s.html_safe)
+        end
       end
 
       # close table row at the end of a week and start a new one
