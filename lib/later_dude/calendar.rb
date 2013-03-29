@@ -93,7 +93,6 @@ module LaterDude
       end
       content = '' if day.month != @days.first.month
 
-      if content == ''
       content = content_tag(:div, options) do
         content_tag(:span, content.to_s.html_safe) +
         tag("img", :src => "/assets/blank_image.gif")
