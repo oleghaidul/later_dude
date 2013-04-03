@@ -35,7 +35,7 @@ module LaterDude
       @days = Date.civil(@year, @month, 1)..Date.civil(@year, @month, -1)
       @block = block
       @periods = @options[:periods]
-      @header_color = options[:color] || '#D5EBDA'
+      @header_color = @options[:color] || '#D5EBDA'
     end
 
     def to_html
