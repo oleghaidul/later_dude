@@ -35,11 +35,12 @@ module LaterDude
       @days = Date.civil(@year, @month, 1)..Date.civil(@year, @month, -1)
       @block = block
       @periods = @options[:periods]
+      @header_color = options[:color] || '#D5EBDA'
     end
 
     def to_html
       content_tag(:div, :class => "calendar") do
-        content_tag(:div, "#{show_month_names}".html_safe, :class => 'header') +
+        content_tag(:div, "#{show_month_names}".html_safe, :class => 'header', :style => "background-color:#{@header_color};") +
         content_tag(:div, "#{show_day_names}".html_safe, :class => 'day-headers') +
         content_tag(:div, show_days, :class => 'calendar-body')
       end
