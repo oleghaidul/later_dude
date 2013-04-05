@@ -47,12 +47,16 @@ module LaterDude
     end
 
     def index_days
-      content_tag(:div, show_days, class: 'calendar-days')
+      content_tag(:div, show_index_days, class: 'calendar-days')
     end
 
     private
     def show_days
       content_tag(:div, "#{show_previous_month}#{show_current_month}#{show_following_month}".html_safe)
+    end
+
+    def show_index_days
+      content_tag(:div, "#{show_previous_month_index}#{show_current_month_index}#{show_following_month_index}".html_safe)
     end
 
     def show_previous_month
@@ -74,6 +78,28 @@ module LaterDude
       "".tap do |output|
         # diff = 42 - total_days - (@days.last + 1).upto(beginning_of_week(@days.last + 1.week) - 1).count
         (@days.last + 1).upto(beginning_of_week(@days.last + 1.week) - 1) { |d| output << show_day(d) }
+      end.html_safe
+    end
+
+    def show_previous_month_index
+      @total_days = (beginning_of_week(@days.first)..@days.first - 1).count || 0
+      return if @days.first.wday == first_day_of_week # don't display anything if the first day is the first day of a week
+      "".tap do |output|
+        beginning_of_week(@days.first).upto(@days.first - 1) { |d| output << show_index_day(d) }
+      end.html_safe
+    end
+
+    def show_current_month_index
+      @total_days += @days.count
+      "".tap do |output|
+        @days.first.upto(@days.last) { |d| output << show_index_day(d) }
+      end.html_safe
+    end
+
+    def show_following_month_index
+      "".tap do |output|
+        # diff = 42 - total_days - (@days.last + 1).upto(beginning_of_week(@days.last + 1.week) - 1).count
+        (@days.last + 1).upto(beginning_of_week(@days.last + 1.week) - 1) { |d| output << show_index_day(d) }
       end.html_safe
     end
 
@@ -108,6 +134,32 @@ module LaterDude
       # content << "</tr><tr>".html_safe if day < @days.last && day.wday == last_day_of_week
       content
     end
+
+    def show_index_day(day)
+      hash_params = status(@periods, day.to_date) || {}
+      hash_params.merge!(date: "#{day}")
+      options = { :class => "day" }
+      day.month != @days.first.month ? options[:class] << " blank" : options.merge!(data: hash_params)
+      options[:class] << " today" if day.today?
+
+      # block is only called for current month or if :yield_surrounding_days is set to true
+      if @block && (@options[:yield_surrounding_days] || day.month == @days.first.month)
+        content, options_from_block = Array(@block.call(day))
+
+        # passing options is optional
+        if options_from_block.is_a?(Hash)
+          options[:class] << " #{options_from_block.delete(:class)}" if options_from_block[:class]
+          options.merge!(options_from_block)
+        end
+      else
+        content = day.day
+      end
+      # content = '' if day.month != @days.first.month
+
+      content = content_tag(:div, options) do
+        content_tag(:span, content.to_s.html_safe) +
+        tag("img", :src => "/assets/blank_image.gif")
+      end
 
     def status(periods, day)
       if periods.select{|arr| arr.start_date == day.to_date}.any? && periods.select{|arr| arr.end_date == day.to_date}.any?
