@@ -152,7 +152,7 @@ module LaterDude
           options.merge!(options_from_block)
         end
       else
-        content = day.day
+        content = day.day if day.month == @days.first.month
       end
       # content = '' if day.month != @days.first.month
 
