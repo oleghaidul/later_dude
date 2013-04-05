@@ -46,6 +46,10 @@ module LaterDude
       end
     end
 
+    def index_days
+      content_tag(:div, show_days, class: 'calendar-days')
+    end
+
     private
     def show_days
       content_tag(:div, "#{show_previous_month}#{show_current_month}#{show_following_month}".html_safe)
