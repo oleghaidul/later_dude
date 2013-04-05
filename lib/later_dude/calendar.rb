@@ -90,7 +90,7 @@ module LaterDude
     end
 
     def show_current_month_index
-      @total_days += @days.count
+      @days.count
       "".tap do |output|
         @days.first.upto(@days.last) { |d| output << show_index_day(d) }
       end.html_safe
