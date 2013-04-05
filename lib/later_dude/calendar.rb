@@ -160,6 +160,7 @@ module LaterDude
         content_tag(:span, content.to_s.html_safe) +
         tag("img", :src => "/assets/blank_image.gif")
       end
+    end
 
     def status(periods, day)
       if periods.select{|arr| arr.start_date == day.to_date}.any? && periods.select{|arr| arr.end_date == day.to_date}.any?
