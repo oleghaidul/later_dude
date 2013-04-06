@@ -157,7 +157,7 @@ module LaterDude
       # content = '' if day.month != @days.first.month
 
       content = content_tag(:td, options) do
-        content_tag(:span, content.to_s.html_safe)
+        content_tag(:td, content.to_s.html_safe)
       end
     end
 
@@ -165,16 +165,16 @@ module LaterDude
       if periods.select{|arr| arr.start_date == day.to_date}.any? && periods.select{|arr| arr.end_date == day.to_date}.any?
         start_period = periods.select{|arr| arr.start_date == day.to_date}.first
         end_period = periods.select{|arr| arr.end_date == day.to_date}.first
-        {status: "bouth", period_id: [start_period.id, end_period.id], color: [start_period.color, end_period.color], price: [start_period.price, end_period.price]}
+        {status: "bouth", period_id: [start_period.id, end_period.id], color: [start_period.color, end_period.color], "original-title" => [start_period.price, end_period.price]}
       elsif periods.select{|arr| arr.start_date == day.to_date}.any?
         period = periods.select{|arr| arr.start_date == day.to_date}.first
-        {status: "start", period_id: period.id, color: period.color, price: period.price}
+        {status: "start", period_id: period.id, color: period.color, "original-title"=> period.price}
       elsif periods.select{|arr| arr.end_date == day.to_date}.any?
         period = periods.select{|arr| arr.end_date == day.to_date}.first
-        {status: "end", period_id: period.id, color: period.color, price: period.price}
+        {status: "end", period_id: period.id, color: period.color, "original-title"=> period.price}
       elsif periods.select{|arr| arr.start_date <= day.to_date && arr.end_date >= day.to_date}.any?
         period = periods.select{|arr| arr.start_date <= day.to_date && arr.end_date >= day.to_date}.first
-        {status: "between", period_id: period.id, color: period.color, price: period.price}
+        {status: "between", period_id: period.id, color: period.color, "original-title"=> period.price}
       else
         {status: "not_found"}
       end
