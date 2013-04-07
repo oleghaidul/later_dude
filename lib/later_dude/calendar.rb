@@ -139,7 +139,7 @@ module LaterDude
 
     def show_index_day(day)
       hash_params = status(@periods, day.to_date) || {}
-      hash_params = hash_params.merge!(price_periods(@price_periods, day.to_date))
+      hash_params = hash_params.merge!(price_periods(@price_periods, day.to_date)) unless @price_periods.nil?
       hash_params.merge!(date: "#{day.to_date.strftime('%d-%m-%Y')}")
       options = { :class => "day" }
       day.month != @days.first.month ? options[:class] << " blank" : options.merge!(data: hash_params)
