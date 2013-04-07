@@ -35,6 +35,7 @@ module LaterDude
       @days = Date.civil(@year, @month, 1)..Date.civil(@year, @month, -1)
       @block = block
       @periods = @options[:periods]
+      @price_periods = @options[:price_periods]
       @header_color = @options[:color] || '#D5EBDA'
     end
 
@@ -105,6 +106,7 @@ module LaterDude
 
     def show_day(day)
       hash_params = status(@periods, day.to_date) || {}
+      hash_params = hash_params.merge!(price_periods(@price_periods, day.to_date))
       hash_params.merge!(date: "#{day.to_date.strftime('%d-%m-%Y')}")
       options = { :class => "day" }
       day.month != @days.first.month ? options[:class] << " blank" : options.merge!(data: hash_params)
@@ -137,6 +139,7 @@ module LaterDude
 
     def show_index_day(day)
       hash_params = status(@periods, day.to_date) || {}
+      hash_params = hash_params.merge!(price_periods(@price_periods, day.to_date))
       hash_params.merge!(date: "#{day.to_date.strftime('%d-%m-%Y')}")
       options = { :class => "day" }
       day.month != @days.first.month ? options[:class] << " blank" : options.merge!(data: hash_params)
@@ -178,6 +181,14 @@ module LaterDude
       else
         {status: "not_found"}
       end
+    end
+
+    def price_periods(price_periods, day)
+      if price_periods.select{|arr| arr.start_date <= day.to_date && arr.end_date >= day.to_date}.any?
+        price_period = price_periods.select{|arr| arr.start_date <= day.to_date && arr.end_date >= day.to_date}.first
+        {per_night: price_period.per_night, currency: price_period.currency}
+      else
+        {}
     end
 
     def beginning_of_week(day)
