@@ -106,7 +106,7 @@ module LaterDude
 
     def show_day(day)
       hash_params = status(@periods, day.to_date) || {}
-      hash_params = hash_params.merge!(price_periods(@price_periods, day.to_date))
+      hash_params = hash_params.merge!(price_periods(@price_periods, day.to_date)) unless @price_periods.nil?
       hash_params.merge!(date: "#{day.to_date.strftime('%d-%m-%Y')}")
       options = { :class => "day" }
       day.month != @days.first.month ? options[:class] << " blank" : options.merge!(data: hash_params)
@@ -165,18 +165,18 @@ module LaterDude
     end
 
     def status(periods, day)
-      if periods.select{|arr| arr.start_date == day.to_date}.any? && periods.select{|arr| arr.end_date == day.to_date}.any?
-        start_period = periods.select{|arr| arr.start_date == day.to_date}.first
-        end_period = periods.select{|arr| arr.end_date == day.to_date}.first
+      if periods.select{|arr| arr.start_date.to_date == day.to_date}.any? && periods.select{|arr| arr.end_date.to_date == day.to_date}.any?
+        start_period = periods.select{|arr| arr.start_date.to_date == day.to_date}.first
+        end_period = periods.select{|arr| arr.end_date.to_date == day.to_date}.first
         {status: "bouth", period_id: [start_period.id, end_period.id], color: [start_period.color, end_period.color], "original-title" => [start_period.price, end_period.price]}
-      elsif periods.select{|arr| arr.start_date == day.to_date}.any?
-        period = periods.select{|arr| arr.start_date == day.to_date}.first
+      elsif periods.select{|arr| arr.start_date.to_date == day.to_date}.any?
+        period = periods.select{|arr| arr.start_date.to_date == day.to_date}.first
         {status: "start", period_id: period.id, color: period.color, "original-title" => period.price}
-      elsif periods.select{|arr| arr.end_date == day.to_date}.any?
-        period = periods.select{|arr| arr.end_date == day.to_date}.first
+      elsif periods.select{|arr| arr.end_date.to_date == day.to_date}.any?
+        period = periods.select{|arr| arr.end_date.to_date == day.to_date}.first
         {status: "end", period_id: period.id, color: period.color, "original-title" => period.price}
-      elsif periods.select{|arr| arr.start_date <= day.to_date && arr.end_date >= day.to_date}.any?
-        period = periods.select{|arr| arr.start_date <= day.to_date && arr.end_date >= day.to_date}.first
+      elsif periods.select{|arr| arr.start_date.to_date <= day.to_date && arr.end_date.to_date >= day.to_date}.any?
+        period = periods.select{|arr| arr.start_date.to_date <= day.to_date && arr.end_date.to_date >= day.to_date}.first
         {status: "between", period_id: period.id, color: period.color, "original-title" => period.price}
       else
         {status: "not_found"}
@@ -184,8 +184,8 @@ module LaterDude
     end
 
     def price_periods(price_periods, day)
-      if price_periods.select{|arr| arr.start_date <= day.to_date && arr.end_date >= day.to_date}.any?
-        price_period = price_periods.select{|arr| arr.start_date <= day.to_date && arr.end_date >= day.to_date}.first
+      if price_periods.select{|arr| arr.start_date.to_date <= day.to_date && arr.end_date.to_date >= day.to_date}.any?
+        price_period = price_periods.select{|arr| arr.start_date.to_date <= day.to_date && arr.end_date.to_date >= day.to_date}.first
         {per_night: price_period.per_night, currency: price_period.currency.name}
       else
         {}
