@@ -189,6 +189,7 @@ module LaterDude
         {per_night: price_period.per_night, currency: price_period.currency}
       else
         {}
+      end
     end
 
     def beginning_of_week(day)
