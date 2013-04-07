@@ -186,7 +186,7 @@ module LaterDude
     def price_periods(price_periods, day)
       if price_periods.select{|arr| arr.start_date <= day.to_date && arr.end_date >= day.to_date}.any?
         price_period = price_periods.select{|arr| arr.start_date <= day.to_date && arr.end_date >= day.to_date}.first
-        {per_night: price_period.per_night, currency: price_period.currency}
+        {per_night: price_period.per_night, currency: price_period.currency.name}
       else
         {}
       end
