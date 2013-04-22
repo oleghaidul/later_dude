@@ -38,7 +38,7 @@ module LaterDude
       @price_periods = @options[:price_periods]
       @header_color = @options[:color] || '#D5EBDA'
       hex = @header_color.scan(/\#(..)(..)(..)/)[0]
-      if (hex[0].hex > 102 && hex[1].hex > 102) || (hex[1].hex > 102 && hex[2].hex > 102) || (hex[0].hex > 102 && hex[2].hex > 102)
+      if (hex[0].hex > 102 && hex[1].hex > 102) || (hex[1].hex > 102 && hex[2].hex > 102) || (hex[0].hex > 102 && hex[2].hex > 102) || (hex[0] == 102 && hex[1] == 255) || (@header_color != "#990066")
         @text_color = '#000000'
       else
         @text_color = '#ffffff'
