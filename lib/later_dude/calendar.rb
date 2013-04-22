@@ -47,7 +47,7 @@ module LaterDude
 
     def to_html
       content_tag(:div, :class => "calendar") do
-        content_tag(:div, "#{show_month_names} #{@year}".html_safe, :class => 'header', :style => "background-color:#{@header_color};font:#{@text_color};") +
+        content_tag(:div, "#{show_month_names} #{@year}".html_safe, :class => 'header', :style => "background-color:#{@header_color};color:#{@text_color};") +
         content_tag(:div, "#{show_day_names}".html_safe, :class => 'day-headers') +
         content_tag(:div, show_days, :class => 'calendar-body')
       end
