@@ -37,11 +37,17 @@ module LaterDude
       @periods = @options[:periods]
       @price_periods = @options[:price_periods]
       @header_color = @options[:color] || '#D5EBDA'
+      hex = @header_color.scan(/\#(..)(..)(..)/)[0]
+      if (hex[0].hex > 102 && hex[1].hex > 102) || (hex[1].hex > 102 && hex[2].hex > 102) || (hex[0].hex > 102 && hex[2].hex > 102)
+        @text_color = '#000000'
+      else
+        @text_color = '#ffffff'
+      end
     end
 
     def to_html
       content_tag(:div, :class => "calendar") do
-        content_tag(:div, "#{show_month_names} #{@year}".html_safe, :class => 'header', :style => "background-color:#{@header_color};") +
+        content_tag(:div, "#{show_month_names} #{@year}".html_safe, :class => 'header', :style => "background-color:#{@header_color};font:#{@text_color};") +
         content_tag(:div, "#{show_day_names}".html_safe, :class => 'day-headers') +
         content_tag(:div, show_days, :class => 'calendar-body')
       end
