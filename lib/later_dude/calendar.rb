@@ -115,7 +115,7 @@ module LaterDude
       hash_params = hash_params.merge!(price_periods(@price_periods, day.to_date)) unless @price_periods.nil?
       hash_params.merge!(date: "#{day.to_date.strftime('%d-%m-%Y')}")
       options = { :class => "day" }
-      day.month != @days.first.month ? options[:class] << " blank" : options.merge!(data: hash_params).delete(:style)
+      day.month != @days.first.month ? options[:class] << " blank" : options.merge!(data: hash_params.except(:style))
       options[:class] << " today" if day.today?
 
       # block is only called for current month or if :yield_surrounding_days is set to true
@@ -148,7 +148,7 @@ module LaterDude
       hash_params = hash_params.merge!(price_periods(@price_periods, day.to_date)) unless @price_periods.nil?
       hash_params.merge!(date: "#{day.to_date.strftime('%d-%m-%Y')}")
       options = { :class => "day" }
-      day.month != @days.first.month ? options[:class] << " blank" : options.merge!(data: hash_params).delete(:style)
+      day.month != @days.first.month ? options[:class] << " blank" : options.merge!(data: hash_params.except(:style))
       options[:class] << " today" if day.today?
 
       # block is only called for current month or if :yield_surrounding_days is set to true
