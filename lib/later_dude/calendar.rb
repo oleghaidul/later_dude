@@ -115,7 +115,7 @@ module LaterDude
       hash_params = hash_params.merge!(price_periods(@price_periods, day.to_date)) unless @price_periods.nil?
       hash_params.merge!(date: "#{day.to_date.strftime('%d-%m-%Y')}")
       options = { :class => "day" }
-      day.month != @days.first.month ? options[:class] << " blank" : options.merge!(data: hash_params)
+      day.month != @days.first.month ? options[:class] << " blank" : options.merge!(data: hash_params).delete(:style)
       options[:class] << " today" if day.today?
 
       # block is only called for current month or if :yield_surrounding_days is set to true
@@ -133,7 +133,7 @@ module LaterDude
       content = '' if day.month != @days.first.month
 
       content = content_tag(:div, options) do
-        content_tag(:span, content.to_s.html_safe) +
+        content_tag(:span, content.to_s.html_safe, style: hash_params[:style]) +
         tag("img", :src => "/assets/blank_image.gif")
       end
 
@@ -148,7 +148,7 @@ module LaterDude
       hash_params = hash_params.merge!(price_periods(@price_periods, day.to_date)) unless @price_periods.nil?
       hash_params.merge!(date: "#{day.to_date.strftime('%d-%m-%Y')}")
       options = { :class => "day" }
-      day.month != @days.first.month ? options[:class] << " blank" : options.merge!(data: hash_params)
+      day.month != @days.first.month ? options[:class] << " blank" : options.merge!(data: hash_params).delete(:style)
       options[:class] << " today" if day.today?
 
       # block is only called for current month or if :yield_surrounding_days is set to true
@@ -166,24 +166,71 @@ module LaterDude
       # content = '' if day.month != @days.first.month
 
       content = content_tag(:td, options) do
-        content_tag(:span, content.to_s.html_safe)
+        content_tag(:span, content.to_s.html_safe, style: hash_params[:style])
       end
+    end
+
+    def colorize(status, options={})
+      if status == "bouth"
+        start_color = options[:start_color]
+        end_color = options[:end_color]
+        output_color = "background: -webkit-linear-gradient(-45deg, #{end_color} 47%, #ffffff 48%, #ffffff 52% ,#{start_color} 47%);"
+        output_color += "background: -webkit-gradient(linear, left top, right bottom, color-stop(47%,#{end_color}), color-stop(48%,#ffffff), color-stop(52%,ffffff), color-stop(47%,#{start_color}));"
+        output_color += "background: -moz-linear-gradient(-45deg, #{end_color} 47%, #ffffff 48%, #ffffff 52% ,#{start_color} 47%);"
+        output_color += "background: -o-linear-gradient(-45deg, #{end_color} 47%, #ffffff 48%, #ffffff 52% ,#{start_color} 47%);"
+        output_color += "background: -ms-linear-gradient(-45deg, #{end_color} 47%, #ffffff 48%, #ffffff 52% ,#{start_color} 47%);"
+        output_color += "background: linear-gradient(135deg, #{end_color} 47%, #ffffff 48%, #ffffff 52% ,#{start_color} 47%);"
+        output_color += "filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#{end_color}', endColorstr='#{start_color}',GradientType=1);"
+        output_color += "color: #fff;"
+        output_color
+      elsif status == "start"
+        color = options[:color]
+        output_color = "background: -webkit-linear-gradient(135deg, #{color} 50%, #ffffff 50%);"
+        output_color += "background: -webkit-gradient(linear, right bottom, left top, color-stop(50%,#{color}), color-stop(50%,#ffffff));"
+        output_color += "background: -moz-linear-gradient(135deg, #{color} 50%, #ffffff 50%);"
+        output_color += "background: -o-linear-gradient(135deg, #{color} 50%, #ffffff 50%);"
+        output_color += "background: -ms-linear-gradient(135deg, #{color} 50%, #ffffff 50%);"
+        output_color += "background: linear-gradient(-45deg, #{color} 50%, #ffffff 50%);"
+        output_color += "filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#{color}',GradientType=1);"
+        output_color
+      elsif status == "end"
+        color = options[:color]
+        output_color = "background: -webkit-linear-gradient(-45deg, #{color} 50%, #ffffff 50%);"
+        output_color += "background: -webkit-gradient(linear, left top, right bottom, color-stop(50%,#{color}), color-stop(50%,#ffffff));"
+        output_color += "background: -moz-linear-gradient(-45deg, #{color} 50%, #ffffff 50%);"
+        output_color += "background: -o-linear-gradient(-45deg, #{color} 50%, #ffffff 50%);"
+        output_color += "background: -ms-linear-gradient(-45deg, #{color} 50%, #ffffff 50%);"
+        output_color += "background: linear-gradient(135deg, #{color} 50%, #ffffff 50%);"
+        output_color += "filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#{color}', endColorstr='#ffffff',GradientType=1);"
+        output_color
+      elsif status == "between"
+        color = options[:color]
+        hex = color.scan(/\#(..)(..)(..)/)[0]
+        if (hex[0].hex > 102 && hex[1].hex > 102) || (hex[1].hex > 102 && hex[2].hex > 102) || (hex[0].hex > 102 && hex[2].hex > 102) || (hex[0].hex == 102 && hex[1].hex == 255)
+          text_color = '#000'
+        else
+          text_color = '#fff'
+        end
+        output_color = "background-color: #{color};"
+        output_color += "color: #{text_color};"
+      end
+
     end
 
     def status(periods, day)
       if periods.select{|arr| arr.start_date.to_date == day.to_date}.any? && periods.select{|arr| arr.end_date.to_date == day.to_date}.any?
         start_period = periods.select{|arr| arr.start_date.to_date == day.to_date}.first
         end_period = periods.select{|arr| arr.end_date.to_date == day.to_date}.first
-        {status: "bouth", period_id: [start_period.id, end_period.id], color: [start_period.color, end_period.color], "original-title" => [start_period.price, end_period.price]}
+        {status: "bouth", period_id: [start_period.id, end_period.id], style: colorize("bouth", start_color: start_period.color, end_color: end_period.color), "original-title" => [start_period.price, end_period.price]}
       elsif periods.select{|arr| arr.start_date.to_date == day.to_date}.any?
         period = periods.select{|arr| arr.start_date.to_date == day.to_date}.first
-        {status: "start", period_id: period.id, color: period.color, "original-title" => period.price}
+        {status: "start", period_id: period.id, style: colorize("start", color: period.color)}
       elsif periods.select{|arr| arr.end_date.to_date == day.to_date}.any?
         period = periods.select{|arr| arr.end_date.to_date == day.to_date}.first
-        {status: "end", period_id: period.id, color: period.color, "original-title" => period.price}
+        {status: "end", period_id: period.id, style: colorize("end", color: period.color)}
       elsif periods.select{|arr| arr.start_date.to_date <= day.to_date && arr.end_date.to_date >= day.to_date}.any?
         period = periods.select{|arr| arr.start_date.to_date <= day.to_date && arr.end_date.to_date >= day.to_date}.first
-        {status: "between", period_id: period.id, color: period.color, "original-title" => period.price}
+        {status: "between", period_id: period.id, style: colorize("between", color: period.color)}
       else
         {status: "not_found"}
       end
