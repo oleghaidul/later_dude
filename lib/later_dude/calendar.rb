@@ -145,9 +145,7 @@ module LaterDude
 
     def show_index_day(day)
       hash_params = status(@periods, day.to_date) || {}
-      hash_params = hash_params.merge!(price_periods(@price_periods, day.to_date)) unless @price_periods.nil?
-      hash_params.merge!(date: "#{day.to_date.strftime('%d-%m-%Y')}")
-      options = { :class => "day" }
+      options = { :class => "day_list" }
       day.month != @days.first.month ? options[:class] << " blank" : options.merge!(data: hash_params.except(:style))
       options[:class] << " today" if day.today?
 
@@ -221,7 +219,7 @@ module LaterDude
       if periods.select{|arr| arr.start_date.to_date == day.to_date}.any? && periods.select{|arr| arr.end_date.to_date == day.to_date}.any?
         start_period = periods.select{|arr| arr.start_date.to_date == day.to_date}.first
         end_period = periods.select{|arr| arr.end_date.to_date == day.to_date}.first
-        {status: "bouth", period_id: [start_period.id, end_period.id], style: colorize("bouth", start_color: start_period.color, end_color: end_period.color), "original-title" => [start_period.price, end_period.price]}
+        {status: "bouth", period_id: [start_period.id, end_period.id], style: colorize("bouth", start_color: start_period.color, end_color: end_period.color)}
       elsif periods.select{|arr| arr.start_date.to_date == day.to_date}.any?
         period = periods.select{|arr| arr.start_date.to_date == day.to_date}.first
         {status: "start", period_id: period.id, style: colorize("start", color: period.color)}
